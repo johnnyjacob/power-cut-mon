@@ -3,18 +3,11 @@ google.charts.load('current', {
 });
 google.charts.setOnLoadCallback(drawChart);
 
-
-function fetchData(sheet_id){
-    var dataTable = new google.visualization.DataTable();
-    //return datatable
-}
-
 function drawChart() {
     var container = document.getElementById('timeline');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
-    var on_color = '#0F9D58';
-    var off_color = '#de5246';
+
     dataTable.addColumn({type: 'string', id: 'Day'});
     dataTable.addColumn({type: 'string', id: 'Power'});
     dataTable.addColumn({type: 'string', id: 'style', role: 'style' });

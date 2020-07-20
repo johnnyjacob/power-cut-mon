@@ -13,7 +13,7 @@ function drawChart() {
     dataTable.addColumn({type: 'string', id: 'style', role: 'style' });
     dataTable.addColumn({type: 'date', id: 'Start'});
     dataTable.addColumn({type: 'date', id: 'End'});
-
+    var powerCutEvents = [];
     Papa.parse("http://localhost:1337/data.csv", { 
         download: true,
         header: true,
@@ -29,19 +29,20 @@ function drawChart() {
             if (momentStart.isSame(momentEnd, 'days')) {
                 var startTime = new Date (0,0,0, start.getHours(), start.getMinutes(), start.getSeconds());
                 var endTime = new Date (0,0,0, end.getHours(), end.getMinutes(), end.getSeconds());
+                
                 if (row.data['state'].localeCompare ('OFF')) {
-                    dataTable.addRow([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
+                    powerCutEvents.push ([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
                 } else {
-                    dataTable.addRow([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
+                    powerCutEvents.push ([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
                 }
             } else {
                 while (!momentStart.isSame(momentEnd, 'days')) {
                     var startTime = new Date (0,0,0, start.getHours(), start.getMinutes(), start.getSeconds());
                     var endTime = new Date (0,0,0, 23,59, 59);
                     if (row.data['state'].localeCompare ('OFF')) {
-                        dataTable.addRow([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
+                        powerCutEvents.push([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
                     } else {
-                        dataTable.addRow([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
+                        powerCutEvents.push([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
                     }
                     momentStart = momentStart.add(1, 'd').startOf('day');
                     start = momentStart.toDate();
@@ -49,14 +50,11 @@ function drawChart() {
                 var startTime = new Date (0,0,0, 0, 0, 1);
                 var endTime = new Date (0,0,0, end.getHours(), end.getMinutes(), end.getSeconds());
                 if (row.data['state'].localeCompare ('OFF')) {
-                    dataTable.addRow([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
+                    powerCutEvents.push([momentStart.format('ll'), row.data['state'],'#0F9D58', startTime, endTime]);
                 } else {
-                    dataTable.addRow([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
+                    powerCutEvents.push([momentStart.format('ll'), row.data['state'],'#DE5246', startTime, endTime]);
                 }
-
-                console.log ("Not same day..");
             }
-
         },
 	    complete: function(results) {
             console.log(results);
@@ -69,7 +67,8 @@ function drawChart() {
                     groupByRowLabel: true
                 },
             };
-        
+            powerCutEvents.reverse();
+            dataTable.addRows(powerCutEvents);
             chart.draw(dataTable, options);
 	    }
     });
